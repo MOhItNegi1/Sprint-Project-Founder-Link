@@ -1,0 +1,13 @@
+.search {
+  min-width: min(100%, 360px);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.table-panel {
+  padding: .25rem;
+}

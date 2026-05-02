@@ -1,0 +1,32 @@
+<section class="page-title">
+  <h1>Notifications</h1>
+  <p>Review platform alerts, funding updates, and profile tasks.</p>
+</section>
+
+<div class="toolbar">
+  <button class="btn" type="button" [class.btn-primary]="showUnread()" (click)="showUnread.set(!showUnread())">Unread only</button>
+</div>
+
+<section class="notification-list">
+  @for (item of visibleNotifications(); track item.notificationId) {
+    <article class="panel notification-card">
+      <div>
+        <h2>{{ item.title }}</h2>
+        <p>{{ item.message }}</p>
+        <span>{{ item.createdAt | date:'medium' }}</span>
+      </div>
+      <div class="notification-actions">
+        <fl-status-badge [status]="item.read ? 'READ' : 'UNREAD'" />
+        @if (!item.read) {
+          <button class="btn btn-ghost" type="button"
+            [disabled]="marking() === item.notificationId"
+            (click)="markRead(item.notificationId)">
+            {{ marking() === item.notificationId ? 'Marking...' : 'Mark read' }}
+          </button>
+        }
+      </div>
+    </article>
+  } @empty {
+    <p class="empty-state panel">You are all caught up.</p>
+  }
+</section>

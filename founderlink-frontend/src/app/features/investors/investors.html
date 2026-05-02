@@ -1,0 +1,15 @@
+<section class="page-title">
+  <h1>Users Directory</h1>
+  <p>Admin-only view of all registered users on the platform.</p>
+</section>
+
+<div class="toolbar">
+  <div class="field search">
+      <label for="investor-search">Search</label>
+      <input id="investor-search" [formControl]="search" placeholder="Search users by name, email, role">
+    </div>
+</div>
+
+<section class="panel table-panel">
+  <fl-data-table [columns]="$any(columns)" [rows]="$any(filteredUsers())" />
+</section>

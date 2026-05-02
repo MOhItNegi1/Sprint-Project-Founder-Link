@@ -5,6 +5,13 @@
     <file url="file://$PROJECT_DIR$/ConfigServer/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/EurekaServer/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/apiGateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/Auth-UserService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/ConfigServer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/EurekaServer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/apiGateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/investmentService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/notificationService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/startupService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/collaborationService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/investmentService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/notificationService/src/main/java" charset="UTF-8" />

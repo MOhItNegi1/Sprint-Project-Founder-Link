@@ -1,0 +1,12 @@
+<article class="stat-card" [class]="'stat-card tone-' + card().tone">
+  <div class="stat-icon">
+    <span class="material-symbols-outlined">
+      {{ card().tone === 'blue' ? 'account_balance' : card().tone === 'purple' ? 'rocket_launch' : card().tone === 'green' ? 'group' : 'pending_actions' }}
+    </span>
+  </div>
+  <div>
+    <p>{{ card().label }}</p>
+    <strong>{{ card().value }}</strong>
+    <span>{{ card().change }}</span>
+  </div>
+</article>

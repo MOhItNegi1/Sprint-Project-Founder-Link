@@ -10,7 +10,7 @@
         <module name="EurekaServer" />
         <module name="ConfigServer" />
       </profile>
-      <profile name="Annotation profile for startupService" enabled="true">
+      <profile name="Annotation profile for founderlink-backend" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -20,8 +20,8 @@
         <module name="apiGateway" />
         <module name="Auth-UserService" />
         <module name="startupService" />
-        <module name="notificationService" />
         <module name="investmentService" />
+        <module name="notificationService" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

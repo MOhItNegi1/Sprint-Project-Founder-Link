@@ -1,0 +1,34 @@
+<section class="page-title">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="margin-bottom: 0.25rem;">{{ title() }}</h1>
+      <p style="margin: 0;">{{ subtitle() }}</p>
+    </div>
+    <a [routerLink]="ctaLink()" class="btn btn-primary" style="height: 48px; font-size: 1rem; padding: 0 1.5rem;">
+      {{ ctaText() }}
+    </a>
+  </div>
+</section>
+
+<section class="stats-grid">
+  @for (card of stats$ | async; track card.label) {
+    <fl-stat-card [card]="card" />
+  }
+</section>
+
+<section class="panel chart-panel" style="margin-bottom: 1rem;">
+  <div class="panel-header">
+    <h2>{{ chartTitle() }}</h2>
+    <span>Live data</span>
+  </div>
+  <div class="chart-wrap"><canvas #fundingChart></canvas></div>
+</section>
+
+<section class="panel table-panel">
+  <div class="panel-header">
+    <h2>{{ tableTitle() }}</h2>
+    <span>Recent records</span>
+  </div>
+  <fl-data-table [columns]="$any(startupColumns)" [rows]="$any(tableData$ | async) ?? []" />
+</section>
+

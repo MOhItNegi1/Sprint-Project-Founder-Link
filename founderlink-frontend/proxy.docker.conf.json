@@ -1,0 +1,27 @@
+{
+  "/auth": {
+    "target": "http://api-gateway:8080",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/users": {
+    "target": "http://api-gateway:8080",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/startups": {
+    "target": "http://api-gateway:8080",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/investments": {
+    "target": "http://api-gateway:8080",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/notifications": {
+    "target": "http://api-gateway:8080",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

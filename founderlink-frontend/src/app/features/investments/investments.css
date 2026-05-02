@@ -1,0 +1,34 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.table-panel {
+  padding: .25rem;
+}
+
+.action-list {
+  display: grid;
+  gap: .75rem;
+  margin-top: 1rem;
+}
+
+.action-list article {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.action-list span {
+  color: var(--muted);
+}
+
+.action-list div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}

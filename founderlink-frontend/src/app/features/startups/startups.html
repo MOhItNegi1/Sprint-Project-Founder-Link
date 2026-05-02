@@ -1,0 +1,108 @@
+<section class="page-title">
+  <h1>Startups</h1>
+  <p>Founder creation, investor discovery, and admin approval use the real startup service.</p>
+</section>
+
+@if (auth.isFounder()) {
+  <form class="panel create-panel" [formGroup]="startupForm" (ngSubmit)="createStartup()">
+    <h2>Create Startup</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label for="startupName">Startup Name</label>
+        <input id="startupName" formControlName="startupName">
+      </div>
+      <div class="field">
+        <label for="industry">Industry</label>
+        <input id="industry" formControlName="industry">
+      </div>
+      <div class="field">
+        <label for="fundingGoal">Funding Goal</label>
+        <input id="fundingGoal" type="number" formControlName="fundingGoal">
+      </div>
+      <div class="field">
+        <label for="stage">Stage</label>
+        <select id="stage" formControlName="stage">
+          <option value="IDEA">Idea</option>
+          <option value="MVP">MVP</option>
+          <option value="EARLY_TRACTION">Early Traction</option>
+          <option value="SCALING">Scaling</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="location">Location</label>
+        <input id="location" formControlName="location">
+      </div>
+      <div class="field wide">
+        <label for="description">Description</label>
+        <textarea id="description" rows="3" formControlName="description"></textarea>
+      </div>
+      <div class="field wide">
+        <label for="problemStatement">Problem Statement</label>
+        <textarea id="problemStatement" rows="2" formControlName="problemStatement"></textarea>
+      </div>
+      <div class="field wide">
+        <label for="solution">Solution</label>
+        <textarea id="solution" rows="2" formControlName="solution"></textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Create Startup</button>
+  </form>
+}
+
+@if (message()) {
+  <p class="panel notice">{{ message() }}</p>
+}
+
+<div class="toolbar">
+  <div class="field search">
+    <label for="startup-search">Search</label>
+    <input id="startup-search" [formControl]="search" placeholder="Search startups, industries, locations">
+  </div>
+  <div class="filters">
+    @if (auth.isInvestor()) {
+      @for (option of ['All', 'APPROVED']; track option) {
+        <button class="btn" type="button" [class.btn-primary]="status() === option" (click)="status.set(option)">{{ option }}</button>
+      }
+    } @else {
+      @for (option of ['All', 'PENDING', 'APPROVED', 'REJECTED']; track option) {
+        <button class="btn" type="button" [class.btn-primary]="status() === option" (click)="status.set(option)">{{ option }}</button>
+      }
+    }
+  </div>
+</div>
+
+<section class="startup-grid">
+  @for (startup of visibleStartups(); track startup.startupId) {
+    <article class="startup-card panel">
+      <header>
+        <div>
+          <h2>{{ startup.startupName }}</h2>
+          <span>{{ startup.industry || 'No industry' }} · {{ startup.stage }}</span>
+        </div>
+        <fl-status-badge [status]="$any(startup.approvalStatus)" />
+      </header>
+      <p>{{ startup.description }}</p>
+      <dl>
+        <div><dt>Funding Goal</dt><dd>{{ (startup.fundingGoal || 0) | currencyCompact }}</dd></div>
+        <div><dt>Location</dt><dd>{{ startup.location || 'Not specified' }}</dd></div>
+      </dl>
+      @if (auth.isAdmin() && startup.approvalStatus === 'PENDING') {
+        <footer>
+          <button class="btn btn-secondary" type="button" (click)="approve(startup.startupId)">Approve</button>
+          <button class="btn btn-ghost" type="button" (click)="reject(startup.startupId)">Reject</button>
+        </footer>
+      }
+      @if (auth.isInvestor() && startup.approvalStatus === 'APPROVED') {
+        <footer class="invest-footer">
+          <div class="field">
+            <label [for]="'amount-' + startup.startupId">Amount</label>
+            <input [id]="'amount-' + startup.startupId" type="number" [formControl]="investmentAmount">
+          </div>
+          <button class="btn btn-secondary" type="button" (click)="invest(startup.startupId)">Create Investment</button>
+        </footer>
+      }
+    </article>
+  } @empty {
+    <p class="empty-state panel">No startup records found.</p>
+  }
+</section>

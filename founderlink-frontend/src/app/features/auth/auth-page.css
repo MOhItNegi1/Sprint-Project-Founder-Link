@@ -1,0 +1,131 @@
+.auth-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.brand-side {
+  background:
+    linear-gradient(135deg, rgba(19, 27, 46, .94), rgba(19, 27, 46, .86)),
+    radial-gradient(circle at 20% 10%, rgba(0, 106, 97, .5), transparent 32%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.brand-side h1 {
+  font-size: 2.25rem;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.brand-side p {
+  color: #bec6e0;
+  margin: .5rem 0 0;
+}
+
+.brand-side blockquote {
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: var(--radius);
+  font-size: 1.25rem;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 460px;
+  padding: 1.5rem;
+}
+
+.brand-side blockquote span {
+  color: #bec6e0;
+  display: block;
+  font-size: .82rem;
+  font-weight: 800;
+  margin-top: 1rem;
+  text-transform: uppercase;
+}
+
+.auth-card {
+  align-self: center;
+  justify-self: center;
+  max-width: 460px;
+  padding: 1.5rem;
+  width: calc(100% - 2rem);
+}
+
+form {
+  display: grid;
+  gap: 1rem;
+}
+
+.role-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+.role-card {
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  color: var(--muted);
+  display: grid;
+  gap: .5rem;
+  justify-items: center;
+  min-height: 104px;
+  padding: 1rem;
+}
+
+.role-card .material-symbols-outlined {
+  color: var(--muted);
+}
+
+.role-card.active {
+  background: rgba(134, 242, 228, .16);
+  border: 2px solid var(--secondary);
+  color: var(--secondary);
+}
+
+.role-card.active .material-symbols-outlined {
+  color: var(--secondary);
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+.split {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.btn {
+  width: 100%;
+}
+
+.error {
+  color: var(--danger);
+  font-size: .88rem;
+  margin: 0;
+}
+
+.switch {
+  color: var(--muted);
+  margin: 1rem 0 0;
+  text-align: center;
+}
+
+.switch a {
+  color: var(--secondary);
+  font-weight: 800;
+}
+
+@media (max-width: 960px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-side {
+    display: none;
+  }
+}

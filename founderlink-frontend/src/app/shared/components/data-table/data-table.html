@@ -1,0 +1,39 @@
+<div class="table-shell">
+  <table>
+    <thead>
+      <tr>
+        @for (column of columns(); track column.label) {
+          <th>{{ column.label }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track $index) {
+        <tr>
+          @for (column of columns(); track column.label) {
+            <td>
+              @switch (column.type) {
+                @case ('currency') {
+                  {{ $any(value(row, column.key)) | currency:'USD':'symbol':'1.0-0' }}
+                }
+                @case ('date') {
+                  {{ $any(value(row, column.key)) | date:'mediumDate' }}
+                }
+                @case ('status') {
+                  <fl-status-badge [status]="$any(value(row, column.key))" />
+                }
+                @default {
+                  {{ value(row, column.key) }}
+                }
+              }
+            </td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td class="empty" [attr.colspan]="columns().length">No records found.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

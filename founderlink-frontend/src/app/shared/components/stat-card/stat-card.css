@@ -1,0 +1,43 @@
+.stat-card {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  display: flex;
+  gap: 1rem;
+  min-height: 132px;
+  padding: 1.25rem;
+}
+
+.stat-icon {
+  align-items: center;
+  border-radius: 4px;
+  color: var(--secondary);
+  display: grid;
+  flex: 0 0 42px;
+  height: 42px;
+  place-items: center;
+}
+
+p {
+  color: var(--subtle);
+  font-size: .74rem;
+  font-weight: 900;
+  letter-spacing: .02em;
+  margin: 0 0 .35rem;
+  text-transform: uppercase;
+}
+
+strong {
+  color: var(--primary);
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+span {
+  color: var(--muted);
+  display: block;
+  font-size: .82rem;
+  margin-top: .55rem;
+}

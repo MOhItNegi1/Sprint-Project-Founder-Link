@@ -1,0 +1,415 @@
+services:
+  sonarqube-db:
+    image: postgres:16
+    container_name: founderlink-sonarqube-db
+    environment:
+      POSTGRES_DB: sonarqube
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+    ports:
+      - "5437:5432"
+    volumes:
+      - sonarqube_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sonar -d sonarqube"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  sonarqube:
+    image: sonarqube:lts-community
+    container_name: founderlink-sonarqube
+    depends_on:
+      sonarqube-db:
+        condition: service_healthy
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://sonarqube-db:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    restart: unless-stopped
+
+  eureka:
+    build:
+      context: ./backend/EurekaServer
+      dockerfile: Dockerfile
+    container_name: founderlink-eureka
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8761/actuator/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+
+  configserver:
+    build:
+      context: ./backend/ConfigServer
+      dockerfile: Dockerfile
+    container_name: founderlink-configserver
+    depends_on:
+      eureka:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: composite
+      CONFIG_GIT_URI: https://github.com/MOhItNegi1/FounderLink-ConfigServer-Final.git
+      CONFIG_GIT_DEFAULT_LABEL: main
+      SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_0_TYPE: native
+      SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_0_SEARCH_LOCATIONS: file:/docker-config-overrides
+      SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_TYPE: git
+      SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_URI: https://github.com/MOhItNegi1/FounderLink-ConfigServer-Final.git
+      SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_DEFAULT_LABEL: main
+      SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_CLONE_ON_START: "true"
+      SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_FORCE_PULL: "true"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+    volumes:
+      - ./_docker_config_overrides:/docker-config-overrides:ro
+    ports:
+      - "8888:8888"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8888/actuator/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: founderlink-zipkin
+    ports:
+      - "9411:9411"
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: founderlink-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: unless-stopped
+
+  auth-db:
+    image: postgres:16
+    container_name: founderlink-auth-db
+    environment:
+      POSTGRES_DB: founderlink_auth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "9999"
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d founderlink_auth"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  startup-db:
+    image: postgres:16
+    container_name: founderlink-startup-db
+    environment:
+      POSTGRES_DB: founderlink_startup
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "9999"
+    ports:
+      - "5434:5432"
+    volumes:
+      - startup_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d founderlink_startup"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  investment-db:
+    image: postgres:16
+    container_name: founderlink-investment-db
+    environment:
+      POSTGRES_DB: founderlink_investment
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "9999"
+    ports:
+      - "5435:5432"
+    volumes:
+      - investment_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d founderlink_investment"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  notification-db:
+    image: postgres:16
+    container_name: founderlink-notification-db
+    environment:
+      POSTGRES_DB: founderlink_notification
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "9999"
+    ports:
+      - "5436:5432"
+    volumes:
+      - notification_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d founderlink_notification"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  auth-user-service:
+    build:
+      context: ./backend/Auth-UserService
+      dockerfile: Dockerfile
+    container_name: founderlink-auth-user-service
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      auth-db:
+        condition: service_healthy
+      zipkin:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://configserver:8888
+      SPRING_CLOUD_CONFIG_FAIL_FAST: "true"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/founderlink_auth
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "9999"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+    expose:
+      - "8081"
+    command:
+      - --spring.datasource.url=jdbc:postgresql://auth-db:5432/founderlink_auth
+      - --spring.datasource.username=postgres
+      - --spring.datasource.password=9999
+      - --spring.datasource.driver-class-name=org.postgresql.Driver
+      - --spring.jpa.hibernate.ddl-auto=update
+      - --eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - --management.zipkin.tracing.endpoint=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8081/actuator/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+  startup-service:
+    build:
+      context: ./backend/startupService
+      dockerfile: Dockerfile
+    container_name: founderlink-startup-service
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      startup-db:
+        condition: service_healthy
+      zipkin:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://configserver:8888
+      SPRING_CLOUD_CONFIG_FAIL_FAST: "true"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://startup-db:5432/founderlink_startup
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "9999"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: "5672"
+      ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+    expose:
+      - "8082"
+    command:
+      - --spring.datasource.url=jdbc:postgresql://startup-db:5432/founderlink_startup
+      - --spring.datasource.username=postgres
+      - --spring.datasource.password=9999
+      - --spring.datasource.driver-class-name=org.postgresql.Driver
+      - --spring.jpa.hibernate.ddl-auto=update
+      - --spring.rabbitmq.host=rabbitmq
+      - --spring.rabbitmq.port=5672
+      - --eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - --management.zipkin.tracing.endpoint=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8082/actuator/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+  investment-service:
+    build:
+      context: ./backend/investmentService
+      dockerfile: Dockerfile
+    container_name: founderlink-investment-service
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      investment-db:
+        condition: service_healthy
+      zipkin:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://configserver:8888
+      SPRING_CLOUD_CONFIG_FAIL_FAST: "true"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://investment-db:5432/founderlink_investment
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "9999"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: "5672"
+      ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+    expose:
+      - "8083"
+    command:
+      - --spring.datasource.url=jdbc:postgresql://investment-db:5432/founderlink_investment
+      - --spring.datasource.username=postgres
+      - --spring.datasource.password=9999
+      - --spring.datasource.driver-class-name=org.postgresql.Driver
+      - --spring.jpa.hibernate.ddl-auto=update
+      - --spring.rabbitmq.host=rabbitmq
+      - --spring.rabbitmq.port=5672
+      - --eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - --management.zipkin.tracing.endpoint=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8083/actuator/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ./backend/notificationService
+      dockerfile: Dockerfile
+    container_name: founderlink-notification-service
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      notification-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      zipkin:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://configserver:8888
+      SPRING_CLOUD_CONFIG_FAIL_FAST: "true"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://notification-db:5432/founderlink_notification
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "9999"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: "5672"
+      ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+    expose:
+      - "8085"
+    command:
+      - --spring.datasource.url=jdbc:postgresql://notification-db:5432/founderlink_notification
+      - --spring.datasource.username=postgres
+      - --spring.datasource.password=9999
+      - --spring.datasource.driver-class-name=org.postgresql.Driver
+      - --spring.jpa.hibernate.ddl-auto=update
+      - --spring.rabbitmq.host=rabbitmq
+      - --spring.rabbitmq.port=5672
+      - --eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - --management.zipkin.tracing.endpoint=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8085/actuator/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ./backend/apiGateway
+      dockerfile: Dockerfile
+    container_name: founderlink-api-gateway
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+      auth-user-service:
+        condition: service_healthy
+      startup-service:
+        condition: service_healthy
+      investment-service:
+        condition: service_healthy
+      notification-service:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_CONFIG_URI: http://configserver:8888
+      SPRING_CLOUD_CONFIG_FAIL_FAST: "true"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+    ports:
+      - "8080:8080"
+    command:
+      - --eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - --management.zipkin.tracing.endpoint=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./founderlink-frontend
+      dockerfile: Dockerfile
+    container_name: founderlink-frontend
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    ports:
+      - "4200:4200"
+    restart: unless-stopped
+
+volumes:
+  auth_db_data:
+  startup_db_data:
+  investment_db_data:
+  notification_db_data:
+  sonarqube_db_data:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:

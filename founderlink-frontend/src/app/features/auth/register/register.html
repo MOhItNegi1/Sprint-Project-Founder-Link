@@ -1,0 +1,45 @@
+<main class="auth-page">
+  <section class="brand-side">
+    <div>
+      <h1>Founder Link</h1>
+      <p>Institutional Portal for Modern Ventures</p>
+    </div>
+    <blockquote>
+      "A cleaner way to verify, discover, and close venture opportunities."
+      <span>FounderLink Network</span>
+    </blockquote>
+  </section>
+  <section class="auth-card panel">
+    <div class="page-title">
+      <h1>Get Started</h1>
+      <p>Choose your access type and create a secure profile.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="role-grid">
+        @for (role of roles; track role) {
+          <button class="role-card" type="button" [class.active]="form.controls.role.value === role.value" (click)="form.controls.role.setValue(role.value)">
+            <span class="material-symbols-outlined">{{ role.icon }}</span>
+            <b>{{ role.label }}</b>
+          </button>
+        }
+      </div>
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" formControlName="name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password" autocomplete="new-password">
+      </div>
+
+      <button class="btn btn-primary" type="submit" [disabled]="loading()">{{ loading() ? 'Creating...' : 'Create Secure Account' }}</button>
+    </form>
+
+    <p class="switch">Already have an account? <a routerLink="/login">Sign in</a></p>
+  </section>
+</main>

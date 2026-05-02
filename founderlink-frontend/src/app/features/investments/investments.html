@@ -1,0 +1,38 @@
+<section class="page-title">
+  <h1>Investments</h1>
+  <p>{{ auth.isFounder() ? 'Review investment requests for your startups.' : 'Track your submitted investment requests.' }}</p>
+</section>
+
+<div class="toolbar">
+  <div class="filters">
+    @for (option of ['All', 'PENDING', 'APPROVED', 'REJECTED', 'COMPLETED']; track option) {
+      <button class="btn" type="button" [class.btn-primary]="status() === option" (click)="status.set(option)">{{ option }}</button>
+    }
+  </div>
+</div>
+
+<section class="panel table-panel">
+  <fl-data-table [columns]="$any(columns)" [rows]="$any(filteredInvestments())" />
+</section>
+
+@if (auth.isFounder()) {
+  <section class="action-list">
+    @for (investment of filteredInvestments(); track investment.investmentId) {
+      @if (investment.status === 'PENDING' || investment.status === 'APPROVED') {
+        <article class="panel">
+          <strong>#{{ investment.investmentId }} · Startup {{ investment.startupId }}</strong>
+          <span>{{ investment.amount | currency:'USD':'symbol':'1.0-0' }} · {{ investment.status }}</span>
+          <div>
+            @if (investment.status === 'PENDING') {
+              <button class="btn btn-secondary" type="button" (click)="approve(investment.investmentId)">Approve</button>
+              <button class="btn btn-ghost" type="button" (click)="reject(investment.investmentId)">Reject</button>
+            }
+            @if (investment.status === 'APPROVED') {
+              <button class="btn btn-primary" type="button" (click)="complete(investment.investmentId)">Complete</button>
+            }
+          </div>
+        </article>
+      }
+    }
+  </section>
+}
