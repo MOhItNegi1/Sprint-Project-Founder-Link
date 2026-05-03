@@ -39,6 +39,10 @@ public class AuthServiceTest {
     private ModelMapper modelMapper;
     @Mock
     private JwtUtil jwtUtil;
+    @Mock
+    private EmailService emailService;
+    @Mock
+    private com.example.Auth.UserService.producer.NotificationProducer notificationProducer;
     @InjectMocks
     private AuthService authService;
 

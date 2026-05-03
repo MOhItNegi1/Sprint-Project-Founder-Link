@@ -99,6 +99,7 @@ export type InvestmentStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'COMPLETED'
 export interface InvestmentResponse {
   investmentId: number;
   startupId: number;
+  startupName: string;
   investorId: number;
   amount: number;
   status: InvestmentStatus;

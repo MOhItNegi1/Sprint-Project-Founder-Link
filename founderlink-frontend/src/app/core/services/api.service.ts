@@ -95,6 +95,10 @@ export class ApiService {
     return this.http.put<NotificationResponse>(`/notifications/markAsRead/${notificationId}`, {});
   }
 
+  deleteNotification(notificationId: number) {
+    return this.http.delete<void>(`/notifications/delete/${notificationId}`);
+  }
+
   private pageParams(page: number, size: number, sortBy: string, direction: 'asc' | 'desc' = 'asc') {
     return new HttpParams()
       .set('page', page)

@@ -1,65 +1,102 @@
 .profile-grid {
   display: grid;
-  gap: 1rem;
+  gap: 2rem;
   grid-template-columns: 320px minmax(0, 1fr);
-}
-
-.profile-card, .profile-form {
-  padding: 1rem;
 }
 
 .profile-card {
   align-self: start;
+  padding: 2rem;
   text-align: center;
 }
 
 .profile-card h2 {
-  margin: .8rem 0 .25rem;
+  margin: 1rem 0 .25rem;
+  font-size: 1.5rem;
 }
 
 .profile-card p {
   color: var(--muted);
-  margin: 0;
+  font-size: 0.9rem;
+  margin: 0.2rem 0;
 }
 
 .avatar {
-  background: linear-gradient(135deg, var(--primary), var(--primary-strong));
-  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--secondary), var(--primary));
+  border-radius: 20px;
   color: #fff;
   display: grid;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 900;
-  height: 108px;
+  height: 120px;
   margin: 0 auto;
   place-items: center;
-  width: 108px;
+  width: 120px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .profile-form {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-.split {
+.section-card {
+  padding: 2rem;
+}
+
+.section-card h3 {
+  margin: 0 0 1.5rem;
+  color: var(--primary);
+  font-size: 1.1rem;
+  border-bottom: 1px solid var(--border-soft);
+  padding-bottom: 0.75rem;
+}
+
+.form-grid {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
   grid-template-columns: 1fr 1fr;
+}
+
+.wide {
+  grid-column: span 2;
 }
 
 .actions {
   align-items: center;
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   justify-content: flex-end;
+  padding: 1rem 0;
 }
 
-.actions span {
+.save-toast {
   color: var(--success);
-  font-weight: 800;
+  font-weight: 700;
+  font-size: 0.9rem;
+  animation: fadeIn 0.3s ease;
 }
 
-@media (max-width: 860px) {
-  .profile-grid, .split {
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+  .profile-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .wide {
+    grid-column: span 1;
   }
 }

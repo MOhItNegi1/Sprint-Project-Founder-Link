@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class InvestmentResponse {
     private Long investmentId;
     private Long startupId;
+    private String startupName;
     private Long investorId;
     private Long founderId;
     private Double amount;

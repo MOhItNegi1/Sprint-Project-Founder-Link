@@ -24,6 +24,11 @@
             {{ marking() === item.notificationId ? 'Marking...' : 'Mark read' }}
           </button>
         }
+        <button class="btn btn-danger" type="button"
+          [disabled]="deleting() === item.notificationId"
+          (click)="deleteNotification(item.notificationId)">
+          {{ deleting() === item.notificationId ? 'Deleting...' : 'Delete' }}
+        </button>
       </div>
     </article>
   } @empty {

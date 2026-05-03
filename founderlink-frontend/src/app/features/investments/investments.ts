@@ -25,7 +25,7 @@ export class InvestmentsComponent {
   );
   readonly columns = [
     { key: 'investmentId', label: 'Investment ID' },
-    { key: 'startupId', label: 'Startup ID' },
+    { key: 'startupName', label: 'Startup' },
     { key: 'amount', label: 'Amount', type: 'currency' },
     { key: 'createdAt', label: 'Created', type: 'date' },
     { key: 'status', label: 'Status', type: 'status' }

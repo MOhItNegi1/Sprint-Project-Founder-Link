@@ -20,7 +20,7 @@
     @for (investment of filteredInvestments(); track investment.investmentId) {
       @if (investment.status === 'PENDING' || investment.status === 'APPROVED') {
         <article class="panel">
-          <strong>#{{ investment.investmentId }} · Startup {{ investment.startupId }}</strong>
+          <strong>#{{ investment.investmentId }} · {{ investment.startupName }}</strong>
           <span>{{ investment.amount | currency:'USD':'symbol':'1.0-0' }} · {{ investment.status }}</span>
           <div>
             @if (investment.status === 'PENDING') {

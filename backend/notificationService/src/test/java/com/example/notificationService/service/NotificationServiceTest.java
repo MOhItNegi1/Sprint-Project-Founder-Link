@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,7 +72,7 @@ class NotificationServiceTest {
         notification.setTitle("Title");
         notification.setMessage("Message");
         notification.setType(NotificationType.STARTUP_APPROVED);
-        when(notificationRepository.findByUserId(7L)).thenReturn(List.of(notification));
+        when(notificationRepository.findByUserIdOrderByCreatedAtDesc(7L)).thenReturn(List.of(notification));
 
         List<NotificationResponse> responses = notificationService.getUserNotificationsById(7L);
 
@@ -100,6 +101,31 @@ class NotificationServiceTest {
 
         assertTrue(notification.isRead());
         assertTrue(response.isRead());
+    }
+
+    @Test
+    void deleteNotificationDeletesOwnedNotification() {
+        authenticateAs(7L);
+        Notification notification = new Notification();
+        notification.setNotificationId(11L);
+        notification.setUserId(7L);
+        when(notificationRepository.findById(11L)).thenReturn(Optional.of(notification));
+
+        notificationService.deleteNotification(11L);
+
+        verify(notificationRepository).delete(notification);
+    }
+
+    @Test
+    void deleteNotificationRejectsDifferentUser() {
+        authenticateAs(7L);
+        Notification notification = new Notification();
+        notification.setNotificationId(11L);
+        notification.setUserId(9L);
+        when(notificationRepository.findById(11L)).thenReturn(Optional.of(notification));
+
+        assertThrows(UnauthorizedException.class, () -> notificationService.deleteNotification(11L));
+        verify(notificationRepository, never()).delete(notification);
     }
 
     private void authenticateAs(Long userId) {

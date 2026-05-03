@@ -23,21 +23,15 @@
   <div class="content">
     <header class="topbar">
       <button class="icon-btn menu-btn material-symbols-outlined" type="button" (click)="menuOpen.set(!menuOpen())" aria-label="Toggle navigation">menu</button>
-      <div class="search-box">
-        <span class="material-symbols-outlined">search</span>
-        <input placeholder="Search institutional network..." type="search">
-      </div>
+      <div class="spacer" style="flex: 1;"></div>
       <div class="top-actions">
-        @if (auth.isFounder()) {
-          <button class="btn btn-primary" type="button">Post Update</button>
-        }
         <button class="icon-btn material-symbols-outlined" type="button" (click)="theme.toggle()" aria-label="Toggle dark mode">{{ theme.darkMode() ? 'light_mode' : 'dark_mode' }}</button>
         <a class="icon-btn material-symbols-outlined" routerLink="/notifications" aria-label="Notifications">notifications</a>
         <a class="profile-chip" routerLink="/profile">
           <span>{{ initials() }}</span>
           <b>{{ auth.email() }}</b>
         </a>
-        <button class="btn btn-ghost" type="button" (click)="auth.logout()">Logout</button>
+        <button class="btn btn-danger" type="button" (click)="auth.logout()">Logout</button>
       </div>
     </header>
 

@@ -7,5 +7,5 @@ public enum NotificationType {
     INVESTMENT_CREATED,
     INVESTMENT_APPROVED,
     INVESTMENT_REJECTED,
-
+    INVESTMENT_COMPLETED,
 }

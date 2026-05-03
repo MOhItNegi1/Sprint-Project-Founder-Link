@@ -25,18 +25,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String role = request.getHeader("X-User-Role");
         String userIdHeader = request.getHeader("X-User-Id");
 
-        if (role != null && userIdHeader != null) {
+        if (role != null && userIdHeader != null && !userIdHeader.equals("null")) {
+            try {
+                Long userId = Long.parseLong(userIdHeader);
 
-            Long userId = Long.parseLong(userIdHeader);
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                userId,
+                                null,
+                                List.of(new SimpleGrantedAuthority(role))
+                        );
 
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(
-                            userId,
-                            null,
-                            List.of(new SimpleGrantedAuthority(role))
-                    );
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (NumberFormatException e) {
+                logger.error("Failed to parse X-User-Id: " + userIdHeader);
+            }
         }
 
         filterChain.doFilter(request, response);

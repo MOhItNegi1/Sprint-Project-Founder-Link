@@ -19,6 +19,7 @@ export class NotificationsComponent implements OnInit {
   readonly showUnread = signal(false);
   readonly notifications = signal<NotificationResponse[]>([]);
   readonly marking = signal<number | null>(null);
+  readonly deleting = signal<number | null>(null);
   
   readonly visibleNotifications = computed(() =>
     this.notifications().filter((item) => !this.showUnread() || !item.read)
@@ -47,6 +48,19 @@ export class NotificationsComponent implements OnInit {
       },
       error: () => {
         this.marking.set(null);
+      }
+    });
+  }
+
+  deleteNotification(id: number): void {
+    this.deleting.set(id);
+    this.api.deleteNotification(id).subscribe({
+      next: () => {
+        this.notifications.update((items) => items.filter((item) => item.notificationId !== id));
+        this.deleting.set(null);
+      },
+      error: () => {
+        this.deleting.set(null);
       }
     });
   }

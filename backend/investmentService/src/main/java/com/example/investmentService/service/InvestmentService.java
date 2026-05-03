@@ -61,8 +61,20 @@ public class InvestmentService {
         notificationEvent.setType(NotificationType.INVESTMENT_CREATED);
         notificationProducer.sendNotification(notificationEvent);
 
-        InvestmentResponse response = modelMapper.map(saved, InvestmentResponse.class);
+        InvestmentResponse response = mapToResponse(saved);
         response.setMessage("Investment created successfully");
+        return response;
+    }
+
+    private InvestmentResponse mapToResponse(Investment investment) {
+        InvestmentResponse response = modelMapper.map(investment, InvestmentResponse.class);
+        try {
+            StartupResponse startup = startupClient.getStartupById(investment.getStartupId());
+            response.setStartupName(startup.getStartupName());
+        } catch (Exception e) {
+            log.warn("Failed to fetch startup name for startupId={}", investment.getStartupId());
+            response.setStartupName("Unknown Startup");
+        }
         return response;
     }
 
@@ -77,14 +89,15 @@ public class InvestmentService {
         Investment saved = investmentRepository.save(investment);
         log.info("Investment approved with id={} by founderId={}", id, currentUserId);
 
+        InvestmentResponse response = mapToResponse(saved);
+        
         NotificationEvent notificationEvent=new NotificationEvent();
         notificationEvent.setUserId(investment.getInvestorId());
         notificationEvent.setTitle("investment approved");
-        notificationEvent.setMessage("you investment has been approved for startup id--"+investment.getStartupId() );
+        notificationEvent.setMessage("Your investment has been approved for startup: " + response.getStartupName());
         notificationEvent.setType(NotificationType.INVESTMENT_APPROVED);
         notificationProducer.sendNotification(notificationEvent);
 
-        InvestmentResponse response = modelMapper.map(saved, InvestmentResponse.class);
         response.setMessage("Investment approved");
         return response;
     }
@@ -100,14 +113,15 @@ public class InvestmentService {
         Investment saved = investmentRepository.save(investment);
         log.info("Investment rejected with id={} by founderId={}", id, currentUserId);
 
+        InvestmentResponse response = mapToResponse(saved);
+
         NotificationEvent notificationEvent=new NotificationEvent();
         notificationEvent.setUserId(investment.getInvestorId());
         notificationEvent.setTitle("investment rejected");
-        notificationEvent.setMessage("your investment has been rejected for startup id-"+investment.getStartupId());
+        notificationEvent.setMessage("Your investment has been rejected for startup: " + response.getStartupName());
         notificationEvent.setType(NotificationType.INVESTMENT_REJECTED);
         notificationProducer.sendNotification(notificationEvent);
 
-        InvestmentResponse response = modelMapper.map(saved, InvestmentResponse.class);
         response.setMessage("Investment rejected");
         return response;
     }
@@ -125,7 +139,7 @@ public class InvestmentService {
         investment.setUpdatedAt(LocalDateTime.now());
         Investment saved = investmentRepository.save(investment);
         log.info("Investment completed with id={} by founderId={}", id, currentUserId);
-        InvestmentResponse response = modelMapper.map(saved, InvestmentResponse.class);
+        InvestmentResponse response = mapToResponse(saved);
         response.setMessage("Investment completed");
         return response;
     }
@@ -137,14 +151,12 @@ public class InvestmentService {
             throw new UnauthorizedException("You are not allowed to view this startup's investments");
         }
         List<Investment> investments = investmentRepository.findByStartupId(startupId);
-        List<InvestmentResponse> investmentResponses=investments.stream().map(i -> modelMapper.map(i, InvestmentResponse.class)).toList();
-        return investmentResponses;
+        return investments.stream().map(this::mapToResponse).toList();
     }
 
     public List<InvestmentResponse>  getMyInvestments() {
         Long currentUserId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Investment> investments = investmentRepository.findByInvestorId(currentUserId);
-        List<InvestmentResponse> investmentResponses=investments.stream().map(i -> modelMapper.map(i, InvestmentResponse.class)).toList();
-        return investmentResponses;
+        return investments.stream().map(this::mapToResponse).toList();
     }
 }

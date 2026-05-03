@@ -2,16 +2,18 @@
   display: grid;
   grid-template-columns: 256px minmax(0, 1fr);
   min-height: 100vh;
+  overscroll-behavior: none;
 }
 
 .sidebar {
-  background: #f8fafc;
-  border-right: 1px solid var(--border-soft);
-  color: #334155;
+  background: #1e1e2f;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  color: #a5a5b1;
   height: 100vh;
   padding: 1rem;
   position: sticky;
   top: 0;
+  overscroll-behavior: contain;
 }
 
 .brand {
@@ -23,8 +25,8 @@
 
 .brand > span {
   align-items: center;
-  background: #0f172a;
-  border-radius: 4px;
+  background: var(--secondary);
+  border-radius: 6px;
   color: #fff;
   display: grid;
   height: 34px;
@@ -37,13 +39,13 @@
 }
 
 .brand strong {
-  color: #0f172a;
+  color: #ffffff;
   font-size: 1.1rem;
   font-weight: 900;
 }
 
 .brand small {
-  color: var(--subtle);
+  color: #71717a;
   font-size: .68rem;
   font-weight: 900;
   letter-spacing: .08em;
@@ -57,24 +59,24 @@ nav {
 
 nav a {
   align-items: center;
-  border-right: 2px solid transparent;
-  color: #475569;
+  border-radius: 8px;
+  color: #a5a5b1;
   display: flex;
   font-size: .9rem;
-  font-weight: 700;
+  font-weight: 600;
   gap: .75rem;
-  padding: .75rem;
+  padding: .75rem 1rem;
+  transition: all 0.2s ease;
 }
 
 nav a.active {
-  background: rgba(0, 106, 97, .08);
-  border-right-color: var(--secondary);
-  color: var(--secondary);
+  background: rgba(45, 212, 191, 0.1);
+  color: #2dd4bf;
 }
 
-nav a:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+nav a:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.03);
+  color: #ffffff;
 }
 
 .nav-icon {

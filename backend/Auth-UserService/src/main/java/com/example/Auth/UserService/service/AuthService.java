@@ -29,6 +29,7 @@ public class AuthService {
     private final ModelMapper modelMapper;
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
+    private final com.example.Auth.UserService.producer.NotificationProducer notificationProducer;
 
     public RegisterResponse register(RegisterRequest request) {
         if (userRegistrationRepository.existsByEmail(request.getEmail())) {
@@ -61,8 +62,16 @@ public class AuthService {
 
         try {
             emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName());
+            
+            // Send onboarding notification
+            com.example.Auth.UserService.dto.NotificationEvent event = new com.example.Auth.UserService.dto.NotificationEvent();
+            event.setUserId(savedUser.getUserId());
+            event.setTitle("Welcome to Founder Link!");
+            event.setMessage("Complete your profile to get better visibility.");
+            event.setType(com.example.Auth.UserService.enums.NotificationType.SYSTEM);
+            notificationProducer.sendNotification(event);
         } catch (Exception e) {
-            log.warn("Welcome email could not be sent to {}", savedUser.getEmail(), e);
+            log.warn("Welcome actions could not be completed for {}", savedUser.getEmail(), e);
         }
 
         return registerResponse;

@@ -11,38 +11,48 @@
     <p>{{ user()?.role }}</p>
   </aside>
 
-  <form class="panel profile-form" [formGroup]="form" (ngSubmit)="save()">
-    <div class="split">
-      <div class="field">
-        <label for="companyName">Company Name</label>
-        <input id="companyName" formControlName="companyName">
+  <form class="profile-form" [formGroup]="form" (ngSubmit)="save()">
+    <div class="panel section-card">
+      <h3>Professional Identity</h3>
+      <div class="form-grid">
+        <div class="field">
+          <label for="companyName">Company / Organization</label>
+          <input id="companyName" formControlName="companyName" placeholder="e.g. Acme Corp">
+        </div>
+        <div class="field">
+          <label for="location">Location</label>
+          <input id="location" formControlName="location" placeholder="e.g. San Francisco, CA">
+        </div>
+        <div class="field wide">
+          <label for="bio">Bio</label>
+          <textarea id="bio" rows="4" formControlName="bio" placeholder="Tell the network about yourself..."></textarea>
+        </div>
       </div>
-      <div class="field">
-        <label for="location">Location</label>
-        <input id="location" formControlName="location">
+    </div>
+
+    <div class="panel section-card">
+      <h3>Expertise & Links</h3>
+      <div class="form-grid">
+        <div class="field wide">
+          <label for="skills">Key Skills & Specializations</label>
+          <textarea id="skills" rows="2" formControlName="skills" placeholder="e.g. FinTech, SaaS, AI/ML"></textarea>
+        </div>
+        <div class="field wide">
+          <label for="experience">Professional Experience</label>
+          <textarea id="experience" rows="3" formControlName="experience" placeholder="Brief summary of your track record..."></textarea>
+        </div>
+        <div class="field wide">
+          <label for="portfolioLinks">Portfolio & Social Links</label>
+          <textarea id="portfolioLinks" rows="2" formControlName="portfolioLinks" placeholder="e.g. LinkedIn, Twitter, Personal Site"></textarea>
+        </div>
       </div>
     </div>
-    <div class="field">
-      <label for="skills">Skills</label>
-      <textarea id="skills" rows="3" formControlName="skills"></textarea>
-    </div>
-    <div class="field">
-      <label for="experience">Experience</label>
-      <textarea id="experience" rows="3" formControlName="experience"></textarea>
-    </div>
-    <div class="field">
-      <label for="portfolioLinks">Portfolio Links</label>
-      <textarea id="portfolioLinks" rows="3" formControlName="portfolioLinks"></textarea>
-    </div>
-    <div class="field">
-      <label for="bio">Bio</label>
-      <textarea id="bio" rows="5" formControlName="bio"></textarea>
-    </div>
+
     <div class="actions">
       @if (saved()) {
-        <span>Profile saved</span>
+        <span class="save-toast">Changes saved successfully</span>
       }
-      <button class="btn btn-primary" type="submit">Save profile</button>
+      <button class="btn btn-primary btn-large" type="submit">Update Profile</button>
     </div>
   </form>
 </section>

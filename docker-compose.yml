@@ -95,6 +95,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     restart: unless-stopped
 
   auth-db:
@@ -183,6 +188,8 @@ services:
         condition: service_healthy
       zipkin:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_CONFIG_URI: http://configserver:8888
@@ -193,6 +200,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: "9999"
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: "5672"
       ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
     expose:
       - "8081"
@@ -202,6 +211,8 @@ services:
       - --spring.datasource.password=9999
       - --spring.datasource.driver-class-name=org.postgresql.Driver
       - --spring.jpa.hibernate.ddl-auto=update
+      - --spring.rabbitmq.host=rabbitmq
+      - --spring.rabbitmq.port=5672
       - --eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
       - --management.zipkin.tracing.endpoint=http://zipkin:9411/api/v2/spans
     healthcheck:
@@ -226,6 +237,8 @@ services:
         condition: service_healthy
       zipkin:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_CONFIG_URI: http://configserver:8888
@@ -273,6 +286,8 @@ services:
         condition: service_healthy
       zipkin:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_CONFIG_URI: http://configserver:8888
@@ -319,7 +334,7 @@ services:
       notification-db:
         condition: service_healthy
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
       zipkin:
         condition: service_started
     environment:

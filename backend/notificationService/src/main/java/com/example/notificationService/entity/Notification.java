@@ -31,6 +31,7 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
+    @Column(name = "is_read")
     private boolean read;
 
     private LocalDateTime createdAt;

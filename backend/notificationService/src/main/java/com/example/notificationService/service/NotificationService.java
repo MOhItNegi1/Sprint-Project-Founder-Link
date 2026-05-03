@@ -38,9 +38,9 @@ public class NotificationService {
     public List<NotificationResponse> getUserNotificationsById(Long userId){
         Long tokenUserId=(Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(!tokenUserId.equals(userId)){
-            throw new UnauthorizedException("You dont want see others notification, do you?");
+            throw new UnauthorizedException(" unauthorised , can access your own notifications only ");
         }
-        List<Notification> notifications=notificationRepository.findByUserId(userId);
+        List<Notification> notifications=notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
         List<NotificationResponse> notificationResponses=notifications.stream().map(i->modelMapper.map(i, NotificationResponse.class)).toList();
         return notificationResponses;
     }
@@ -56,5 +56,15 @@ public class NotificationService {
         log.info("Notification marked as read with id={} by userId={}", notificationId, tokenUserId);
         NotificationResponse notificationResponse=modelMapper.map(savedNotification, NotificationResponse.class);
         return notificationResponse;
+    }
+
+    public void deleteNotification(Long notificationId){
+        Long tokenUserId=(Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Notification notification=notificationRepository.findById(notificationId).orElseThrow(()->new NotificationNotFoundException("Notification Not found"));
+        if(!notification.getUserId().equals(tokenUserId)){
+            throw new UnauthorizedException("dont delete others notifications");
+        }
+        notificationRepository.delete(notification);
+        log.info("Notification deleted with id={} by userId={}", notificationId, tokenUserId);
     }
 }
